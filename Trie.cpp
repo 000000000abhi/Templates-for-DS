@@ -1,9 +1,16 @@
+#include <iostream>
+using namespace std;
+
 class TrieNode {
 public:
-    unordered_map<char, TrieNode*> children;
+    TrieNode* children[26];
     bool isEnd;
 
-    TrieNode() : isEnd(false) {}
+    TrieNode() {
+        isEnd = false;
+        for (int i = 0; i < 26; i++) 
+            children[i] = nullptr;
+    }
 };
 
 class Trie {
@@ -13,7 +20,7 @@ private:
     bool searchRecursive(TrieNode* node, const string& word, int index) {
         if (!node) return false;
         if (index == word.size()) return node->isEnd;
-        return searchRecursive(node->children[word[index]], word, index + 1);
+        return searchRecursive(node->children[word[index] - 'a'], word, index + 1);
     }
 
 public:
@@ -24,9 +31,10 @@ public:
     void insert(const string& word) {
         TrieNode* node = root;
         for (char ch : word) {
-            if (!node->children[ch])
-                node->children[ch] = new TrieNode();
-            node = node->children[ch];
+            int idx = ch - 'a';
+            if (!node->children[idx])
+                node->children[idx] = new TrieNode();
+            node = node->children[idx];
         }
         node->isEnd = true;
     }
@@ -34,13 +42,17 @@ public:
     bool searchIterative(const string& word) {
         TrieNode* node = root;
         for (char ch : word) {
-            if (!node->children[ch])
+            int idx = ch - 'a';
+            if (!node->children[idx])
                 return false;
-            node = node->children[ch];
+            node = node->children[idx];
         }
         return node->isEnd;
     }
 
-    
+    bool searchRecursive(const string& word) {
+        return searchRecursive(root, word, 0);
+    }
 };
+
 
